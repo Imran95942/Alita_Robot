@@ -97,19 +97,7 @@ async def bl_watcher(_, m: Message):
         elif action == "mute":
             await m.chat.restrict_member(
                 m.from_user.id,
-                ChatPermissions(
-                    can_send_messages=False,
-                    can_send_media_messages=False,
-                    can_send_stickers=False,
-                    can_send_animations=False,
-                    can_send_games=False,
-                    can_use_inline_bots=False,
-                    can_add_web_page_previews=False,
-                    can_send_polls=False,
-                    can_change_info=False,
-                    can_invite_users=True,
-                    can_pin_messages=False,
-                ),
+                ChatPermissions(),
             )
 
             await m.reply_text(
@@ -126,13 +114,13 @@ async def bl_watcher(_, m: Message):
             _, num = warns_db.warn_user(m.from_user.id, warn_reason)
             if num >= warn_settings["warn_limit"]:
                 if warn_settings["warn_mode"] == "kick":
-                    await m.chat.kick_member(
+                    await m.chat.ban_member(
                         m.from_user.id,
                         until_date=int(time() + 45),
                     )
                     action = "kicked"
                 elif warn_settings["warn_mode"] == "ban":
-                    await m.chat.kick_member(m.from_user.id)
+                    await m.chat.ban_member(m.from_user.id)
                     action = "banned"
                 elif warn_settings["warn_mode"] == "mute":
                     await m.chat.restrict_member(m.from_user.id, ChatPermissions())
@@ -213,7 +201,7 @@ async def gban_watcher(c: Alita, m: Message):
 
     if _banned:
         try:
-            await m.chat.kick_member(m.from_user.id)
+            await m.chat.ban_member(m.from_user.id)
             await m.delete(m.message_id)  # Delete users message!
             await m.reply_text(
                 (tlang(m, "antispam.watcher_banned")).format(

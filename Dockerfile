@@ -1,31 +1,15 @@
-FROM python:3.9.7-slim-bullseye
+FROM ghcr.io/divideprojects/docker-python-base:latest AS build
 
-# Don't use cached python packages
-ENV PIP_NO_CACHE_DIR 1
+# Build virtualenv as separate step: Only re-execute this step when pyproject.toml or poetry.lock changes
+FROM build AS build-venv
+COPY pyproject.toml poetry.lock /
+RUN /venv/bin/poetry export -f requirements.txt --without-hashes --output requirements.txt
+RUN /venv/bin/pip install --disable-pip-version-check -r /requirements.txt
 
-# Installing Required Packages
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install --no-install-recommends -y \
-    bash \
-    python3-dev \
-    python3-lxml \
-    gcc \
-    git \
-    make \
-    && rm -rf /var/lib/apt/lists /var/cache/apt/archives /tmp
-
-# Enter Workplace
+# Copy the virtualenv into a distroless image
+FROM gcr.io/distroless/python3-debian11
 WORKDIR /app
-
-# Copy folder
+COPY --from=build-venv /venv /venv
 COPY . .
-
-# Install dependencies
-RUN pip3 install --upgrade pip
-
-# Install Bot Deps and stuff
-RUN make install
-
-# Run the bot
-ENTRYPOINT ["make", "run"]
+ENTRYPOINT ["/venv/bin/python3"]
+CMD ["-m", "alita"]

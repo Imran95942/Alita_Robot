@@ -16,24 +16,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from html import escape
 from secrets import choice
-from traceback import format_exc
 
-from pyrogram import filters, types
-from pyrogram.errors import RPCError
-from pyrogram.errors.exceptions.bad_request_400 import (
-    ChatAdminRequired,
-    UserNotParticipant,
-)
-from pyrogram.types import (
-    ChatMemberUpdated,
-    ChatPermissions,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-    User,
-)
+from pyrogram import filters
+from pyrogram.errors import ChatAdminRequired, RPCError
+from pyrogram.types import ChatMemberUpdated, InlineKeyboardMarkup, Message
 
-from alita import MESSAGE_DUMP, OWNER_ID
+from alita import OWNER_ID
 from alita.bot_class import Alita
 from alita.database.antispam_db import GBan
 from alita.database.greetings_db import Greetings
@@ -45,6 +33,7 @@ from alita.utils.string import (
     escape_invalid_curly_brackets,
     parse_button,
 )
+from alita.vars import Config
 
 # Initialize
 gdb = GBan()
@@ -107,9 +96,7 @@ async def cleanwlcm(_, m: Message):
             return
         await m.reply_text("what are you trying to do ??")
         return
-    else:
-        await m.reply_text(f"Current settings:- {status}")
-        return
+    await m.reply_text(f"Current settings:- {status}")
     return
 
 
@@ -130,9 +117,7 @@ async def cleangdbye(_, m: Message):
             return
         await m.reply_text("what are you trying to do ??")
         return
-    else:
-        await m.reply_text(f"Current settings:- {status}")
-        return
+    await m.reply_text(f"Current settings:- {status}")
     return
 
 
@@ -153,9 +138,8 @@ async def cleanservice(_, m: Message):
             return
         await m.reply_text("what are you trying to do ??")
         return
-    else:
-        await m.reply_text(f"Current settings:- {status}")
-        return
+    await m.reply_text(f"Current settings:- {status}")
+    return
 
 
 @Alita.on_message(command("setwelcome") & admin_filter & bot_admin_filter)
@@ -269,11 +253,10 @@ async def cleannnnn(_, m: Message):
 
 @Alita.on_chat_member_updated(filters.group, group=69)
 async def member_has_joined(c: Alita, member: ChatMemberUpdated):
-    from alita import BOT_ID
 
     if (
         member.new_chat_member
-        and member.new_chat_member.status not in {"kicked", "left", "restricted"}
+        and member.new_chat_member.status not in {"banned", "left", "restricted"}
         and not member.old_chat_member
     ):
         pass
@@ -285,7 +268,7 @@ async def member_has_joined(c: Alita, member: ChatMemberUpdated):
     db = Greetings(member.chat.id)
     banned_users = gdb.check_gban(user.id)
     try:
-        if user.id == BOT_ID:
+        if user.id == Config.BOT_ID:
             return
         if user.id == OWNER_ID:
             await c.send_message(
@@ -294,7 +277,7 @@ async def member_has_joined(c: Alita, member: ChatMemberUpdated):
             )
             return
         if banned_users:
-            await member.chat.kick_member(user.id)
+            await member.chat.ban_member(user.id)
             await c.send_message(
                 member.chat.id,
                 f"{user.mention} was globally banned so i banned!",
@@ -321,7 +304,7 @@ async def member_has_joined(c: Alita, member: ChatMemberUpdated):
         button = await build_keyboard(button)
         button = InlineKeyboardMarkup(button) if button else None
 
-        if "%%%" in tekss:
+        if "%%%" in tek:
             filter_reply = tek.split("%%%")
             teks = choice(filter_reply)
         else:
@@ -351,11 +334,10 @@ async def member_has_joined(c: Alita, member: ChatMemberUpdated):
 
 @Alita.on_chat_member_updated(filters.group, group=99)
 async def member_has_left(c: Alita, member: ChatMemberUpdated):
-    from alita import BOT_ID
 
     if (
         not member.new_chat_member
-        and member.old_chat_member.status not in {"kicked", "restricted"}
+        and member.old_chat_member.status not in {"banned", "restricted"}
         and member.old_chat_member
     ):
         pass
@@ -431,11 +413,11 @@ async def welcome(c: Alita, m: Message):
         if args[1].lower() == "noformat":
             await m.reply_text(
                 f"""Current welcome settings:-
-        Welcome power: {status}
-        Clean Welcome: {db.get_current_cleanwelcome_settings()}
-        Cleaning service: {db.get_current_cleanservice_settings()}
-        Welcome text in no formating:
-        """,
+            Welcome power: {status}
+            Clean Welcome: {db.get_current_cleanwelcome_settings()}
+            Cleaning service: {db.get_current_cleanservice_settings()}
+            Welcome text in no formating:
+            """,
             )
             await c.send_message(m.chat.id, text=oo, parse_mode=None)
             return
@@ -449,20 +431,19 @@ async def welcome(c: Alita, m: Message):
             return
         await m.reply_text("what are you trying to do ??")
         return
-    else:
-        await m.reply_text(
-            f"""Current welcome settings:-
-Welcome power: {status}
-Clean Welcome: {db.get_current_cleanwelcome_settings()}
-Cleaning service: {db.get_current_cleanservice_settings()}
-Welcome text:
-""",
-        )
-        tek, button = await parse_button(oo)
-        button = await build_keyboard(button)
-        button = InlineKeyboardMarkup(button) if button else None
-        await c.send_message(m.chat.id, text=tek, reply_markup=button)
-        return
+    await m.reply_text(
+        f"""Current welcome settings:-
+    Welcome power: {status}
+    Clean Welcome: {db.get_current_cleanwelcome_settings()}
+    Cleaning service: {db.get_current_cleanservice_settings()}
+    Welcome text:
+    """,
+    )
+    tek, button = await parse_button(oo)
+    button = await build_keyboard(button)
+    button = InlineKeyboardMarkup(button) if button else None
+    await c.send_message(m.chat.id, text=tek, reply_markup=button)
+    return
 
 
 @Alita.on_message(command("goodbye") & admin_filter)
@@ -477,11 +458,11 @@ async def goodbye(c: Alita, m: Message):
         if args[1].lower() == "noformat":
             await m.reply_text(
                 f"""Current goodbye settings:-
-        Goodbye power: {status}
-        Clean Goodbye: {db.get_current_cleangoodbye_settings()}
-        Cleaning service: {db.get_current_cleanservice_settings()}
-        Goodbye text in no formating:
-        """,
+            Goodbye power: {status}
+            Clean Goodbye: {db.get_current_cleangoodbye_settings()}
+            Cleaning service: {db.get_current_cleanservice_settings()}
+            Goodbye text in no formating:
+            """,
             )
             await c.send_message(m.chat.id, text=oo, parse_mode=None)
             return
@@ -495,20 +476,19 @@ async def goodbye(c: Alita, m: Message):
             return
         await m.reply_text("what are you trying to do ??")
         return
-    else:
-        await m.reply_text(
-            f"""Current Goodbye settings:-
-Goodbye power: {status}
-Clean Goodbye: {db.get_current_cleangoodbye_settings()}
-Cleaning service: {db.get_current_cleanservice_settings()}
-Goodbye text:
-""",
-        )
-        tek, button = await parse_button(oo)
-        button = await build_keyboard(button)
-        button = InlineKeyboardMarkup(button) if button else None
-        await c.send_message(m.chat.id, text=tek, reply_markup=button)
-        return
+    await m.reply_text(
+        f"""Current Goodbye settings:-
+    Goodbye power: {status}
+    Clean Goodbye: {db.get_current_cleangoodbye_settings()}
+    Cleaning service: {db.get_current_cleanservice_settings()}
+    Goodbye text:
+    """,
+    )
+    tek, button = await parse_button(oo)
+    button = await build_keyboard(button)
+    button = InlineKeyboardMarkup(button) if button else None
+    await c.send_message(m.chat.id, text=tek, reply_markup=button)
+    return
 
 
 __PLUGIN__ = "greetings"

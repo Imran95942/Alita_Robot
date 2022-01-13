@@ -17,7 +17,6 @@
 
 
 from threading import RLock
-from time import time
 
 from alita import LOGGER
 from alita.database import MongoDB
@@ -83,7 +82,7 @@ class Approve(MongoDB):
     def __ensure_in_db(self):
         chat_data = self.find_one({"_id": self.chat_id})
         if not chat_data:
-            new_data = {"_id": self.chat_id, "users": ()}
+            new_data = {"_id": self.chat_id, "users": []}
             self.insert_one(new_data)
             LOGGER.info(f"Initialized Approve Document for chat {self.chat_id}")
             return new_data
