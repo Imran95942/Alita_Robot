@@ -62,7 +62,7 @@ strings:
         × /cleangoodbye <on/off> : Отображает или устанавливает текущие настройки чистого прощания.
 
         ── **Cleaner** ──:
-        × /cleanservice <on/off> : Use it to clean all service messages automatically or to view current status.
+        × /cleanservice <on/off> : Используйте его для автоматической очистки всех служебных сообщений или для просмотра текущего состояния
 
         ── **Формат** ──
         Проверять /markdownhelp за помощью, связанной с форматированием!
@@ -84,42 +84,42 @@ strings:
         × /stban <дескриптор пользователя> x(m/h/d): молча блокирует пользователя на x раз. (через дескриптор или ответ). m = минуты, h = часы, d = дни.
         x /dtban <userhandle> x(m/h/d): молча блокирует пользователя на x раз и делле
         **Example:**
-        `/ban @username`: this bans a user in the chat.
+        `/ban @username`: это банит пользователя в чате.
     blacklist:
-      main: "Blacklist"
+      main: "Черный список"
       help: |-
-        Want to restrict certain words or sentences in your group?
-        Blacklists are used to stop certain triggers from being said in a group. Any time the trigger is mentioned, that message will immediately be deleted.
-        A good combo is sometimes to pair this up with warn filters!
-        **NOTE:** blacklists do not affect group admins.
-        × /blacklist: View the current blacklisted words.
-        **Admin only:**
-        × /addblacklist `<triggers>`: Add a trigger to the blacklist. Each line is considered one trigger, so using different lines will allow you to add multiple triggers.
-        × /unblacklist `<triggers>`: Remove triggers from the blacklist. Same newline logic applies here, so you can remove multiple triggers at once.
-        × /blaction `<action>`: This action will occur when user uses a blacklist word. Choose from - 'kick', 'ban', 'mute', 'warn'.
-        Default is 'none', which will delete the users message on typing a blacklist word.
-        **Owner Only**
-        × /rmallblacklist: Removes all the blacklists from the current chat.
-        **Note:** Can only add or remove one blacklist at a time!
-        **Example:**
-        `/addblacklist hello`: this adds the word 'hello' as blacklist in the chat.
-    filters:
-      main: "Filters"
-      help: |-
-        • /filters: List all active filters saved in the chat.
+        Хотите ограничить определенные слова или предложения в вашей группе?
+        Черные списки используются для предотвращения произнесения определенных триггеров в группе. Каждый раз, когда упоминается триггер, это сообщение будет немедленно удалена
+        **ПРИМЕЧАНИЕ.** черные списки не влияют на администраторов групп.
+        × /blacklist: Просмотр текущих слов в черном списке.
+        **Только администратор:**
+        × /addblacklist `<triggers>`: Добавьте триггер в черный список. Каждая строка считается одним триггером, поэтому использование разных строк позволит вам добавить несколько триггеров.
+        × /unblacklist `<triggers>`: Удалить триггеры из черного списка. Здесь применяется та же логика новой строки, поэтому вы можете удалить сразу несколько триггеров.
+        × /blaction `<action>`: Это действие произойдет, когда пользователь использует слово из черного списка. Выберите из - "кикнуть", "запретить", "отключить звук", "предупредить".
+Это действие произойдет, когда пользователь использует слово из черного списка. Выберите из - "кикнуть", "запретить", "отключить звук", "предупредить".
+        По умолчанию «нет», что удалит сообщение пользователя при вводе слова из черного списка.
+        **Только владелец**
+        × /rmallblacklist: Удаляет все черные списки из текущего чата.
+        **Примечание.** За один раз можно добавить или удалить только один черный список!
+        **Пример:**
+        `/addblacklist привет`: это добавляет слово "привет" в черный список в чате.
+    фильтры:
+      главная: "Фильтры"
+      помощь: |-
+        • /filters: список всех активных фильтров, сохраненных в чате.
 
-        **Admin only:**
-        • /filter "`<keyword>`" `<reply message>`: Add a filter to this chat. The bot will now reply that message whenever 'keyword'
-        is mentioned. If you reply to a sticker with a keyword, the bot will reply with that sticker.
+        **Только администратор:**
+        • /filter "`<ключевое слово>`" `<ответное сообщение>`: добавить фильтр к этому чату. Теперь бот будет отвечать на это сообщение всякий раз, когда «ключевое слово»
+        упомянуто. Если вы ответите на наклейку с ключевым словом, бот ответит этой наклейкой.
 
-        If you want your keyword to be a sentence, use quotes. eg: /filter "hey there" How are you doin?
-        **Example:**
-        `/filter "filtername" Reply Text`
+        Если вы хотите, чтобы ваше ключевое слово было предложением, используйте кавычки. например: /filter "Привет!" Как дела?
+        **Пример:**
+        `/filter "filtername" Текст ответа`
 
-        Aliases for filters can be too set, just put '|' between the filternames you want.
-        **Example:**
-        `/filter "filtername1|filtername2" Reply Text`
-        Using the you can make a single filter work on 2 filternames without manually adding another one.
+        Псевдонимы для фильтров тоже могут быть заданы, просто поставьте '|' между именами фильтров, которые вы хотите.
+        **Пример:**
+        `/filter "filtername1|filtername2" Текст ответа`
+        С помощью вы можете заставить один фильтр работать с двумя именами фильтров, не добавляя вручную еще один.
 
         • /stop `<filter keyword>`: Stop that filter.
         **Note:** For filters with aliases, if you stop one alias, the filter will stop working on other aliases too.
